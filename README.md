@@ -4,13 +4,23 @@ This package uses [traefik-acme](https://github.com/na4ma4/traefik-acme) to expo
 
 ## Deploy / Configuration
 
+### Get the kube.yaml
+
 ```bash
 curl -fSsl https://raw.githubusercontent.com/jochumdev/acmejson-to-secret/main/kube.yaml -o acmejson-to-secret.yaml
 ```
 
+### Edit it
+
 Edit the ENV Variables of the `CronJob`
 
 `ACME_DOMAINS` is in the format: $domain:$namespace/$name;$domain:$namespace/$name;$domain:$namespace/$name
+
+### Apply it
+
+```bash
+kubectl apply -f acmejson-to-secret.yaml
+```
 
 ## License
 
