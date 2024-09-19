@@ -42,6 +42,7 @@ spec:
     spec:
       template:
         spec:
+          restartPolicy: Never
           affinity: {}
           containers:
             - env:
@@ -52,7 +53,7 @@ spec:
                 - name: ACME_DOMAINS
                   value: mail.example.com:mail/tls-example-com-mail
               image: ghcr.io/jochumdev/acmejson-to-secret:v0.4.1
-              imagePullPolicy: Always
+              imagePullPolicy: IfNotPresent
               name: acmejson-to-secret
               resources: {}
               terminationMessagePath: /dev/termination-log
