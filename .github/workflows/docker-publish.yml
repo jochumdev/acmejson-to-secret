@@ -6,9 +6,7 @@ name: Docker
 # documentation.
 
 on:
-  tag:
-    branches: [ "main" ]
-    # Publish semver tags as releases.
+  push:
     tags: [ 'v*.*.*' ]
 
 env:
