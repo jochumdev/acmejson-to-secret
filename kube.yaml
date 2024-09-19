@@ -1,0 +1,73 @@
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: secret-updater
+subjects:
+- kind: ServiceAccount
+  name: secret-updater
+  namespace: kube-system
+roleRef:
+  kind: ClusterRole
+  name: secret-updater
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: secret-updater
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  # "namespace" omitted since ClusterRoles are not namespaced
+  name: secret-updater
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "list", "create", "delete"]
+---
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: acmejson-to-secret
+  namespace: kube-system
+spec:
+  concurrencyPolicy: Allow
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    metadata:
+      namespace: kube-system
+    spec:
+      template:
+        spec:
+          affinity: {}
+          containers:
+            - env:
+                - name: ACME_STORE
+                  value: /data/acme.json
+                - name: ACME_RESOLVER
+                  value: letsencrypt-prod
+                - name: ACME_DOMAINS
+                  value: mail.jochum.xyz:mail/tls-jochum-xyz-mail
+              image: acmejson-to-secret:v0.4.1
+              imagePullPolicy: Always
+              name: acmejson-to-secret
+              resources: {}
+              terminationMessagePath: /dev/termination-log
+              terminationMessagePolicy: File
+              volumeMounts:
+                - mountPath: /data
+                  name: traefik
+                  readOnly: true
+          serviceAccount: secret-updater
+          serviceAccountName: secret-updater
+          terminationGracePeriodSeconds: 30
+          volumes:
+            - name: traefik
+              persistentVolumeClaim:
+                claimName: traefik
+  schedule: 45 5 * * *
+  successfulJobsHistoryLimit: 3
+  suspend: false
