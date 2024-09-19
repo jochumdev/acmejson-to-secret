@@ -50,8 +50,8 @@ spec:
                 - name: ACME_RESOLVER
                   value: letsencrypt-prod
                 - name: ACME_DOMAINS
-                  value: mail.jochum.xyz:mail/tls-jochum-xyz-mail
-              image: acmejson-to-secret:v0.4.1
+                  value: mail.example.com:mail/tls-example-com-mail
+              image: ghcr.io/jochumdev/acmejson-to-secret:v0.4.1
               imagePullPolicy: Always
               name: acmejson-to-secret
               resources: {}
