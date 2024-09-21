@@ -52,7 +52,9 @@ for d in ${DOMAINS[@]}; do
     cd ..
 
     # Delete and create the tls secret.
-    if [[ ! $(cmp --silent "tls.crt" "check/tls.crt") ]]; then
+    if cmp --silent -- "tls.crt" "check/tls.crt"; then
+        echo "${name}: No update needed."
+    else
         kubectl delete secret "${name}" --namespace "${namespace}" --ignore-not-found
         kubectl create secret generic "${name}" \
             --namespace "${namespace}" \
