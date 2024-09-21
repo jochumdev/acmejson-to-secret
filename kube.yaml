@@ -52,7 +52,7 @@ spec:
                   value: letsencrypt-prod
                 - name: ACME_DOMAINS
                   value: mail.example.com:mail/tls-example-com-mail
-              image: ghcr.io/jochumdev/acmejson-to-secret:v0.4.1
+              image: ghcr.io/jochumdev/acmejson-to-secret:v0.4.1-r1
               imagePullPolicy: IfNotPresent
               name: acmejson-to-secret
               resources: {}
