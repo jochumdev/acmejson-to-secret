@@ -46,13 +46,21 @@ for d in ${DOMAINS[@]}; do
     mv cert.pem tls.crt
     mv key.pem tls.key
 
-    # Delete and create the tls secret.
-    kubectl delete secret "${name}" --namespace "${namespace}" --ignore-not-found
-    kubectl create secret generic "${name}" \
-        --namespace "${namespace}" \
-        --from-file="tls.crt" \
-        --from-file="tls.key"
+    # Download existing tls.crt and compare it.
+    mkdir check; cd check
+    kubectl get secret --namespace "${namespace}" "${name}" -o json -o=jsonpath="{.data.tls\.crt}" | base64 -d > tls.crt
+    cd ..
 
+    # Delete and create the tls secret.
+    if [[ ! $(cmp --silent "tls.crt" "check/tls.crt") ]]; then
+        kubectl delete secret "${name}" --namespace "${namespace}" --ignore-not-found
+        kubectl create secret generic "${name}" \
+            --namespace "${namespace}" \
+            --from-file="tls.crt" \
+            --from-file="tls.key"
+    fi
+
+    rm -rf check
     rm -f tls.crt
     rm -f tls.key
 done
